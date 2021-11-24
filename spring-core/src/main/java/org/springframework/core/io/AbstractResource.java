@@ -54,6 +54,7 @@ public abstract class AbstractResource implements Resource {
 	 */
 	@Override
 	public boolean exists() {
+		// 尝试在文件系统中找到当前资源
 		// Try file existence: can we find the file in the file system?
 		if (isFile()) {
 			try {
@@ -66,6 +67,7 @@ public abstract class AbstractResource implements Resource {
 				}
 			}
 		}
+		// 尝试打开当前资源的流
 		// Fall back to stream existence: can we open the stream?
 		try {
 			getInputStream().close();
@@ -83,6 +85,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation always returns {@code true} for a resource
 	 * that {@link #exists() exists} (revised as of 5.1).
+	 * 默认 资源存在 即 可以读取
 	 */
 	@Override
 	public boolean isReadable() {
@@ -108,6 +111,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation throws a FileNotFoundException, assuming
 	 * that the resource cannot be resolved to a URL.
+	 * 抛出异常，子类如有需要，自己实现
 	 */
 	@Override
 	public URL getURL() throws IOException {
@@ -117,6 +121,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation builds a URI based on the URL returned
 	 * by {@link #getURL()}.
+	 * 依据 {@link #getURL()} 方法生成 uri
 	 */
 	@Override
 	public URI getURI() throws IOException {
@@ -143,6 +148,7 @@ public abstract class AbstractResource implements Resource {
 	 * with the result of {@link #getInputStream()}.
 	 * <p>This is the same as in {@link Resource}'s corresponding default method
 	 * but mirrored here for efficient JVM-level dispatching in a class hierarchy.
+	 * 根据 inputStream 创建
 	 */
 	@Override
 	public ReadableByteChannel readableChannel() throws IOException {
@@ -156,6 +162,8 @@ public abstract class AbstractResource implements Resource {
 	 * checking File length, or possibly simply returning -1 if the stream can
 	 * only be read once.
 	 * @see #getInputStream()
+	 *
+	 * 通过读取资源，获得资源内容长度
 	 */
 	@Override
 	public long contentLength() throws IOException {

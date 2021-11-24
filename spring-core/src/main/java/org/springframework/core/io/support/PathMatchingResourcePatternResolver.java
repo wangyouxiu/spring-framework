@@ -315,13 +315,16 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 */
 	protected Resource[] findAllClassPathResources(String location) throws IOException {
 		String path = location;
+		// 	去除首个 /
 		if (path.startsWith("/")) {
 			path = path.substring(1);
 		}
+		// 执行资源加载
 		Set<Resource> result = doFindAllClassPathResources(path);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Resolved classpath location [" + location + "] to resources " + result);
 		}
+		// 转换成 Resource 数组返回
 		return result.toArray(new Resource[0]);
 	}
 

@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.testfixture.beans.*;
 import org.xml.sax.InputSource;
 
 import org.springframework.aop.framework.ProxyFactory;
@@ -51,12 +52,6 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.MethodReplacer;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.beans.testfixture.beans.DependenciesBean;
-import org.springframework.beans.testfixture.beans.DerivedTestBean;
-import org.springframework.beans.testfixture.beans.FactoryMethods;
-import org.springframework.beans.testfixture.beans.ITestBean;
-import org.springframework.beans.testfixture.beans.IndexedTestBean;
-import org.springframework.beans.testfixture.beans.TestBean;
 import org.springframework.beans.testfixture.beans.factory.DummyFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -119,9 +114,17 @@ class XmlBeanFactoryTests {
 	private static final ClassPathResource REFTYPES_CONTEXT = classPathResource("-reftypes.xml");
 	private static final ClassPathResource DEFAULT_LAZY_CONTEXT = classPathResource("-defaultLazyInit.xml");
 	private static final ClassPathResource DEFAULT_AUTOWIRE_CONTEXT = classPathResource("-defaultAutowire.xml");
+	private static final ClassPathResource BEAN_FACTORY_TEST = classPathResource("-beanFactoryTest.xml");
 
 	private static ClassPathResource classPathResource(String suffix) {
 		return new ClassPathResource(CLASSNAME + suffix, CLASS);
+	}
+
+	@Test
+	void testBeanFactory() {
+		BeanFactory bf = new XmlBeanFactory(BEAN_FACTORY_TEST);
+		MyTestBean myTestBean = (MyTestBean) bf.getBean("myTestBean");
+		System.out.println(myTestBean.getTestStr());
 	}
 
 

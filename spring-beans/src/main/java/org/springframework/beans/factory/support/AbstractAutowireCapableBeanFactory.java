@@ -173,6 +173,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	public AbstractAutowireCapableBeanFactory() {
 		super();
+
+		//ignoreDependencyInterface 接口，实际上是在忽略接口中 setXXX() 方法中的参数
+		//例如，如下的三个接口就需要先忽略掉，因为此时还没有开始bean的初始化
 		ignoreDependencyInterface(BeanNameAware.class);
 		ignoreDependencyInterface(BeanFactoryAware.class);
 		ignoreDependencyInterface(BeanClassLoaderAware.class);
@@ -260,6 +263,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	/**
 	 * Ignore the given dependency type for autowiring:
 	 * for example, String. Default is none.
+	 *
+	 * 在自动装配时，忽略指定的类型，前提是需要在xml中指定 default-autowire 属性为 byType
+	 * 如果使用 @Autowire 注解，则不生效
 	 */
 	public void ignoreDependencyType(Class<?> type) {
 		this.ignoredDependencyTypes.add(type);
@@ -274,6 +280,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * For further types to ignore, invoke this method for each type.
 	 * @see org.springframework.beans.factory.BeanFactoryAware
 	 * @see org.springframework.context.ApplicationContextAware
+	 * 实际上是在自动装配时忽略该接口实现类中和setter方法入参相同的类型，也就是忽略该接口实现类中存在依赖外部的bean属性注入。
 	 */
 	public void ignoreDependencyInterface(Class<?> ifc) {
 		this.ignoredDependencyInterfaces.add(ifc);
