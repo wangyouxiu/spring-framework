@@ -174,8 +174,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	public AbstractAutowireCapableBeanFactory() {
 		super();
 
-		//ignoreDependencyInterface 接口，实际上是在忽略接口中 setXXX() 方法中的参数
-		//例如，如下的三个接口就需要先忽略掉，因为此时还没有开始bean的初始化
+		// ignoreDependencyInterface 接口，实际上是在忽略接口中 setXXX() 方法中的参数
+		// 例如，如下的三个接口就需要先忽略掉，因为此时还没有开始bean的初始化
 		ignoreDependencyInterface(BeanNameAware.class);
 		ignoreDependencyInterface(BeanFactoryAware.class);
 		ignoreDependencyInterface(BeanClassLoaderAware.class);
