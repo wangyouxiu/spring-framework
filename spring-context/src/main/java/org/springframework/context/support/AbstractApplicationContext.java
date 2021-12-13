@@ -520,34 +520,48 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// 获取到 BeanFactory：默认实现是 DefaultListableBeanFactory
+			// 加载 BeanDefinition 并注册到 BeanDefinitionRegistry
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// BeanFactory 的与准备工作
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				// BeanFactory 后置处理
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
+				// 实例化实现了 BeanFactoryPostProcessor 接口的Bean，并调用接口方法
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				// 注册 BeanPostProcessor (Bean 的后置处理器)，在创建 bean 的前后会执行
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
+				// 初始化 MessageSource组件（做国际化功能：消息绑定，消息解析）
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				// 初始化时间派发器
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
 				onRefresh();
 
 				// Check for listener beans and register them.
+				// 注册应用的监听器，就是注册实现了 ApplicationListener 接口的监听器 bean
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				// 初始化所有剩下的非懒加载的单例bean
+				// 实例化创建非懒加载的单例bean实例(仅实例化，未设置属性)
+				// 填充属性
+				// 初始化方法调用（比如调用 afterPropertiesSet 方法、init-method 方法）
+				// 调用BeanPostProcessor(后置处理器)对实例 bean 进行后置处理
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
