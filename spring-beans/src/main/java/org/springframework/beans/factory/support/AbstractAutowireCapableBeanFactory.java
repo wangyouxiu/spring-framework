@@ -434,6 +434,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object result = existingBean;
 		// 对于实现了 BeanPostProcessor 接口的 bean , 调用 postProcessAfterInitialization 方法
+		// AbstractAutoProxyCreator 提供了生成代理对象的方法，用于实现AOP
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
 			Object current = processor.postProcessAfterInitialization(result, beanName);
 			if (current == null) {
@@ -603,7 +604,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 						"' to allow for resolving potential circular references");
 			}
 			// 为了避免后期循环依赖，可以在 bean 初始化完成前将创建实例的 ObjectFactory 加入工厂
-			// AOP 就是在这里进行织入的
+			// 其实就是将 仅实例化(不完整) 的 bean 提前暴露在三级缓存中
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -612,7 +613,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			// 对 bean 进行填充，将各个属性值注入，其中，可能存在依赖于其他 bean 的属性，则会递归初始依赖 bean
 			populateBean(beanName, mbd, instanceWrapper);
-			// 调用初始化方法，比如 init-method
+			// 调用一系列的初始化方法
+			// 一系列的Aware接口 -> 调用 BeanPostProcessors 的 Before 方法 -> 调用 init-method 方法 -> 调用 BeanPostProcessors 的 After 方法
+			// 其中 ， 调用 BeanPostProcessors 的 After 方法，是AOP实现的核心，通过生成代理对象来实现AOP
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -1849,15 +1852,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}, getAccessControlContext());
 		}
 		else {
+			// 调用一系列的 Aware 接口
 			invokeAwareMethods(beanName, bean);
 		}
 
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
+			// 调用 BeanPostProcessors 的 Before 方法
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
 		try {
+			// 调用 init-method 方法
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}
 		catch (Throwable ex) {
@@ -1866,6 +1872,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
+			// 调用 BeanPostProcessors 的 After 方法
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
 

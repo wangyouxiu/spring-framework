@@ -525,7 +525,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
-			// BeanFactory 的与准备工作
+			// BeanFactory 的预准备工作
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -890,6 +890,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
+		// 实例化所有立即加载的单例Bean
 		beanFactory.preInstantiateSingletons();
 	}
 
