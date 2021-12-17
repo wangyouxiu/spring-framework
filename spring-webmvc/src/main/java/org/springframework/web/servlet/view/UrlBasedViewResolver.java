@@ -551,6 +551,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 		Assert.state(viewClass != null, "No view class");
 
 		AbstractUrlBasedView view = (AbstractUrlBasedView) BeanUtils.instantiateClass(viewClass);
+		// 逻辑视图名转换为物理视图名
 		view.setUrl(getPrefix() + viewName + getSuffix());
 		view.setAttributesMap(getAttributesMap());
 

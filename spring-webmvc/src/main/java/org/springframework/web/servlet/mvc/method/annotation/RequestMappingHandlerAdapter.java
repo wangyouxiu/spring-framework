@@ -774,11 +774,14 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		checkRequest(request);
 
 		// Execute invokeHandlerMethod in synchronized block if required.
+		// 判断当前是否需要支持在同一个session中只能线性的处理请求
 		if (this.synchronizeOnSession) {
+			// 需要同步，对session生成一个key，然后加锁执行
 			HttpSession session = request.getSession(false);
 			if (session != null) {
 				Object mutex = WebUtils.getSessionMutex(session);
 				synchronized (mutex) {
+					// 核心方法，反射执行 method
 					mav = invokeHandlerMethod(request, response, handlerMethod);
 				}
 			}
@@ -874,12 +877,13 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				});
 				invocableMethod = invocableMethod.wrapConcurrentResult(result);
 			}
-
+			// 执行 handlerMethod , 返回 modelAndView
 			invocableMethod.invokeAndHandle(webRequest, mavContainer);
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				return null;
 			}
 
+			// 处理 modelAndView ， 主要判断是否进行了重定向
 			return getModelAndView(mavContainer, modelFactory, webRequest);
 		}
 		finally {
